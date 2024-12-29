@@ -27,8 +27,24 @@ public class EmployeeService {
         return employeeRepository.findById(empNo);
     }
 
+    public Employee getEmployeeByFirstNameUsingPathVariable(String firstName) {
+        Employee employee = employeeRepository.findByFirstName(firstName);
+        if (employee == null) {
+            throw new RecordNotFoundException("Employee not found with first name: " + firstName);
+        }
+        return employee;
+    }
+
     public Optional<Employee> getEmployeeByEmpNoUsingRequestParam(Long empNo) {
         return employeeRepository.findById(empNo);
+    }
+
+    public Employee getEmployeeByFirstNameUsingRequestParam(String firstName) {
+        Employee employee = employeeRepository.findByFirstName(firstName);
+        if (employee == null) {
+            throw new RecordNotFoundException("Employee not found with first name: " + firstName);
+        }
+        return employee;
     }
 
     public List<Employee> getAllEmployees() {
@@ -64,15 +80,62 @@ public class EmployeeService {
         return employeeRepository.save(existingEmployee);
     }
 
-    public Employee deleteEmployeeByEmpNo(Long empNo) {
+    public Employee updateEmployeeByFirstName(String firstName, Employee updatedEmployee) {
+        // Validate the provided firstName
+        if (firstName == null || firstName.trim().isEmpty()) {
+            throw new IllegalArgumentException("First name must not be null or empty.");
+        }
+
+        // Fetch the existing employee
+        Employee existingEmployee = employeeRepository.findByFirstName(firstName);
+        if (existingEmployee == null) {
+            throw new RecordNotFoundException("Employee not found with first name to update: " + firstName);
+        }
+
+        // Updating employee fields
+        if (updatedEmployee.getFirstName() != null && !updatedEmployee.getFirstName().trim().isEmpty()) {
+            existingEmployee.setFirstName(updatedEmployee.getFirstName());
+        }
+        existingEmployee.setLastName(updatedEmployee.getLastName());
+        existingEmployee.setBirthDate(updatedEmployee.getBirthDate());
+        existingEmployee.setGender(updatedEmployee.getGender());
+        existingEmployee.setHireDate(updatedEmployee.getHireDate());
+
+        // Update fields selectively. Ensuring only non-null values are updated
+//        if (updatedEmployee.getFirstName() != null && !updatedEmployee.getFirstName().trim().isEmpty()) {
+//            existingEmployee.setFirstName(updatedEmployee.getFirstName());
+//        }
+//        if (updatedEmployee.getLastName() != null) {
+//            existingEmployee.setLastName(updatedEmployee.getLastName());
+//        }
+//        if (updatedEmployee.getBirthDate() != null) {
+//            existingEmployee.setBirthDate(updatedEmployee.getBirthDate());
+//        }
+//        if (updatedEmployee.getGender() != null) {
+//            existingEmployee.setGender(updatedEmployee.getGender());
+//        }
+//        if (updatedEmployee.getHireDate() != null) {
+//            existingEmployee.setHireDate(updatedEmployee.getHireDate());
+//        }
+
+        return employeeRepository.save(existingEmployee);
+    }
+
+    public void deleteEmployeeByEmpNo(Long empNo) {
         Optional<Employee> employeeOptional = employeeRepository.findById(empNo);
         if (employeeOptional.isEmpty()) {
             throw new RecordNotFoundException("Employee not found with empNo to delete: " + empNo);
         }
-
         // Get the employee from Optional
         Employee employee = employeeOptional.get();
         employeeRepository.delete(employee);
-        return employee;
+    }
+
+    public void deleteEmployeeByFirstName(String firstName) {
+        Employee employee = employeeRepository.findByFirstName(firstName);
+        if (employee == null) {
+            throw new RecordNotFoundException("Employee not found with first name to delete: " + firstName);
+        }
+        employeeRepository.delete(employee);
     }
 }
