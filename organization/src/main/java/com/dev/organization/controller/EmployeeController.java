@@ -1,6 +1,7 @@
 package com.dev.organization.controller;
 
 import com.dev.organization.entity.Employee;
+import com.dev.organization.exceptions.RecordNotFoundException;
 import com.dev.organization.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,9 +38,13 @@ public class EmployeeController {
     }
 
     @GetMapping("/getEmp/name/{firstName}") // localhost:8080/employee/getEmp/name/madhan
-    public ResponseEntity<Employee> getEmployeeByFirstNameUsingPathVariable(@PathVariable String firstName) {
-        Employee employee = employeeService.getEmployeeByFirstNameUsingPathVariable(firstName);
-        return employee != null ? ResponseEntity.ok(employee) : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    public ResponseEntity<Object> getEmployeeByFirstNameUsingPathVariable(@PathVariable String firstName) {
+        try {
+            Employee employee = employeeService.getEmployeeByFirstNameUsingPathVariable(firstName);
+            return ResponseEntity.ok(employee);
+        } catch (RecordNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     @GetMapping("/getEmp/no") // localhost:8080/employee/getEmp/no?empNo=602
@@ -51,7 +56,7 @@ public class EmployeeController {
     @GetMapping("/getEmp/name") // localhost:8080/employee/getEmp/name?firstName=madhan
     public ResponseEntity<Employee> getEmployeeByFirstNameUsingRequestParam(@RequestParam(name = "firstName") String firstName) {
         Employee employee = employeeService.getEmployeeByFirstNameUsingRequestParam(firstName);
-        return employee != null ? ResponseEntity.ok(employee) : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return ResponseEntity.ok(employee); // NOT_FOUND will be thrown if no employee found. Error message will be triggered with the help of global exception
     }
 
     @GetMapping("/getAllEmpOrEmpty") // localhost:8080/employee/getAllEmp

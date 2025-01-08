@@ -42,7 +42,7 @@ public class EmployeeService {
     public Employee getEmployeeByFirstNameUsingRequestParam(String firstName) {
         Employee employee = employeeRepository.findByFirstName(firstName);
         if (employee == null) {
-            throw new RecordNotFoundException("Employee not found with first name: " + firstName);
+            throw new RecordNotFoundException("Employee not found with first name: " + firstName); // global exception will get triggered if there is no employee
         }
         return employee;
     }
