@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,10 +54,16 @@ public class EmployeeController {
         return employee != null ? ResponseEntity.ok(employee) : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    @GetMapping("/getAllEmpOrEmpty") // localhost:8080/employee/getAllEmp
+    public ResponseEntity<List<Employee>> getAllEmployeesOrEmptyList() {
+        List<Employee> employees = employeeService.getAllEmployeesOrEmptyList();
+        return !employees.isEmpty() ? ResponseEntity.ok(employees) : ResponseEntity.ok(Collections.emptyList());
+    }
+
     @GetMapping("/getAllEmp") // localhost:8080/employee/getAllEmp
-    public ResponseEntity<List<Employee>> getAllEmployees() {
-        List<Employee> employees = employeeService.getAllEmployees();
-        return ResponseEntity.ok(employees);
+    public ResponseEntity<?> getAllEmployees() {
+        List<?> employees = employeeService.getAllEmployees();
+        return !employees.isEmpty() ? ResponseEntity.ok(employees) : ResponseEntity.status(HttpStatus.NOT_FOUND).body("No employees found");
     }
 
     @PutMapping("/updateEmp/no/{empNo}") // localhost:8080/employee/updateEmp/no/602

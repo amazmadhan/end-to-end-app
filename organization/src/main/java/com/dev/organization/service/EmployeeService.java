@@ -47,12 +47,12 @@ public class EmployeeService {
         return employee;
     }
 
-    public List<Employee> getAllEmployees() {
-        List<Employee> employees = employeeRepository.findAll();
-        if (employees.isEmpty()) {
-            throw new RecordNotFoundException("No Employees are found: " + employees);
-        }
-        return employees;
+    public List<Employee> getAllEmployeesOrEmptyList() {
+        return employeeRepository.findAll(); // Return empty list if no employees are found
+    }
+
+    public List<?> getAllEmployees() {
+        return employeeRepository.findAll(); // Return empty list if no employees are found
     }
 
     public Employee updateEmployeeByEmpNo(Long empNo, Employee updatedEmployee) {
