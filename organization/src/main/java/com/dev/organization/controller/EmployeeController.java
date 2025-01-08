@@ -3,6 +3,8 @@ package com.dev.organization.controller;
 import com.dev.organization.entity.Employee;
 import com.dev.organization.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -22,54 +24,62 @@ public class EmployeeController {
     }
 
     @PostMapping("/addEmp") // localhost:8080/employee/addEmp
-    public Employee addEmployee(@RequestBody Employee employee) {
-        return employeeService.addEmployee(employee);
+    public ResponseEntity<Employee> addEmployee(@RequestBody Employee emp) {
+        Employee employee = employeeService.addEmployee(emp);
+        return ResponseEntity.status(HttpStatus.CREATED).body(employee);
     }
 
     @GetMapping("/getEmp/no/{empNo}") // localhost:8080/employee/getEmp/no/602
-    public Optional<Employee> getEmployeeByEmpNoUsingPathVariable(@PathVariable Long empNo) {
-        return employeeService.getEmployeeByEmpNoUsingPathVariable(empNo);
+    public ResponseEntity<Optional<Employee>> getEmployeeByEmpNoUsingPathVariable(@PathVariable Long empNo) {
+        Optional<Employee> employee = employeeService.getEmployeeByEmpNoUsingPathVariable(empNo);
+        return employee.isPresent() ? ResponseEntity.ok(employee) : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @GetMapping("/getEmp/name/{firstName}") // localhost:8080/employee/getEmp/name/madhan
-    public Employee getEmployeeByFirstNameUsingPathVariable(@PathVariable String firstName) {
-        return employeeService.getEmployeeByFirstNameUsingPathVariable(firstName);
+    public ResponseEntity<Employee> getEmployeeByFirstNameUsingPathVariable(@PathVariable String firstName) {
+        Employee employee = employeeService.getEmployeeByFirstNameUsingPathVariable(firstName);
+        return employee != null ? ResponseEntity.ok(employee) : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @GetMapping("/getEmp/no") // localhost:8080/employee/getEmp/no?empNo=602
-    public Optional<Employee> getEmployeeByEmpNoUsingRequestParam(@RequestParam(name = "empNo") Long empNo) {
-        return employeeService.getEmployeeByEmpNoUsingRequestParam(empNo);
+    public ResponseEntity<Optional<Employee>> getEmployeeByEmpNoUsingRequestParam(@RequestParam(name = "empNo") Long empNo) {
+        Optional<Employee> employee = employeeService.getEmployeeByEmpNoUsingRequestParam(empNo);
+        return employee.isPresent() ? ResponseEntity.ok(employee) : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @GetMapping("/getEmp/name") // localhost:8080/employee/getEmp/name?firstName=madhan
-    public Employee getEmployeeByFirstNameUsingRequestParam(@RequestParam(name = "firstName") String firstName) {
-        return employeeService.getEmployeeByFirstNameUsingRequestParam(firstName);
+    public ResponseEntity<Employee> getEmployeeByFirstNameUsingRequestParam(@RequestParam(name = "firstName") String firstName) {
+        Employee employee = employeeService.getEmployeeByFirstNameUsingRequestParam(firstName);
+        return employee != null ? ResponseEntity.ok(employee) : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @GetMapping("/getAllEmp") // localhost:8080/employee/getAllEmp
-    public List<Employee> getAllEmployees() {
-        return employeeService.getAllEmployees();
+    public ResponseEntity<List<Employee>> getAllEmployees() {
+        List<Employee> employees = employeeService.getAllEmployees();
+        return ResponseEntity.ok(employees);
     }
 
     @PutMapping("/updateEmp/no/{empNo}") // localhost:8080/employee/updateEmp/no/602
-    public Employee updateEmployeeByEmpNo(@PathVariable Long empNo, @RequestBody Employee updateEemployee) {
-        return employeeService.updateEmployeeByEmpNo(empNo, updateEemployee);
+    public ResponseEntity<Employee> updateEmployeeByEmpNo(@PathVariable Long empNo, @RequestBody Employee updateEmployee) {
+        Employee updatedEmployee = employeeService.updateEmployeeByEmpNo(empNo, updateEmployee);
+        return updatedEmployee != null ? ResponseEntity.ok(updatedEmployee) : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @PutMapping("/updateEmp/name/{firstName}") // localhost:8080/employee/updateEmp/name/balaji
-    public Employee updateEmployeeByFirstName(@PathVariable String firstName, @RequestBody Employee updateEemployee) {
-        return employeeService.updateEmployeeByFirstName(firstName, updateEemployee);
+    public ResponseEntity<Employee> updateEmployeeByFirstName(@PathVariable String firstName, @RequestBody Employee updateEmployee) {
+        Employee updatedEmployee = employeeService.updateEmployeeByFirstName(firstName, updateEmployee);
+        return updatedEmployee != null ? ResponseEntity.ok(updatedEmployee) : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @DeleteMapping("/deleteEmp/no/{empNo}") // localhost:8080/employee/deleteEmp/no/652
-    public String deleteEmployeeByEmpNo(@PathVariable Long empNo) {
-        employeeService.deleteEmployeeByEmpNo(empNo);
-        return "Employee deleted successfully";
+    public ResponseEntity<String> deleteEmployeeByEmpNo(@PathVariable Long empNo) {
+        boolean empIsDeleted = employeeService.deleteEmployeeByEmpNo(empNo);
+        return empIsDeleted ? ResponseEntity.ok("Employee deleted successfully") : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Employee not found with empNo " + empNo + " to delete");
     }
 
     @DeleteMapping("/deleteEmp/name/{firstName}") // localhost:8080/employee/deleteEmp/name/surr
-    public String deleteEmployeeByFirstName(@PathVariable String firstName) {
-        employeeService.deleteEmployeeByFirstName(firstName);
-        return "Employee deleted successfully";
+    public ResponseEntity<String> deleteEmployeeByFirstName(@PathVariable String firstName) {
+        boolean empIsDeleted = employeeService.deleteEmployeeByFirstName(firstName);
+        return empIsDeleted ? ResponseEntity.ok("Employee deleted successfully") : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Employee not found with firstName " + firstName + " to delete");
     }
 }

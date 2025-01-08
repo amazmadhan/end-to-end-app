@@ -56,6 +56,7 @@ public class EmployeeService {
     }
 
     public Employee updateEmployeeByEmpNo(Long empNo, Employee updatedEmployee) {
+
         // Validate the provided empNo
         if (empNo == null || empNo <= 0) {
             throw new IllegalArgumentException("EmpNo must not be null or negative.");
@@ -81,6 +82,7 @@ public class EmployeeService {
     }
 
     public Employee updateEmployeeByFirstName(String firstName, Employee updatedEmployee) {
+
         // Validate the provided firstName
         if (firstName == null || firstName.trim().isEmpty()) {
             throw new IllegalArgumentException("First name must not be null or empty.");
@@ -121,21 +123,23 @@ public class EmployeeService {
         return employeeRepository.save(existingEmployee);
     }
 
-    public void deleteEmployeeByEmpNo(Long empNo) {
+    public boolean deleteEmployeeByEmpNo(Long empNo) {
         Optional<Employee> employeeOptional = employeeRepository.findById(empNo);
         if (employeeOptional.isEmpty()) {
-            throw new RecordNotFoundException("Employee not found with empNo to delete: " + empNo);
+            return false;
         }
         // Get the employee from Optional
         Employee employee = employeeOptional.get();
         employeeRepository.delete(employee);
+        return true;
     }
 
-    public void deleteEmployeeByFirstName(String firstName) {
+    public boolean deleteEmployeeByFirstName(String firstName) {
         Employee employee = employeeRepository.findByFirstName(firstName);
         if (employee == null) {
-            throw new RecordNotFoundException("Employee not found with first name to delete: " + firstName);
+            return false;
         }
         employeeRepository.delete(employee);
+        return true;
     }
 }
