@@ -16,3 +16,4 @@ Update "ResponseEntity" for all the REST API's for specifying our own http statu
 For "get all" APIs, 
   1, returning an empty list is the most REST-compliant and user-friendly approach. It avoids unnecessary exceptions or error states and simplifies client-side handling.
   2, returning error message "No employees found" in the body with "404 NOT_FOUND"
+Added dev-tools depedency for live reload functionality. It restarts automatically after making changes to our application.
